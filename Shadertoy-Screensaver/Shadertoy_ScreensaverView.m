@@ -67,7 +67,14 @@ static NSString * const MyModuleName = @"diracdrifter.Shadertoy-Screensaver";
         NSString *header = [self createShadertoyHeader];
 
         NSString *shadertoyJson = [defaults stringForKey:@"ShaderJSON"];
+
+        // Temporary fix for empty json
+            // TODO: Fix this in a better way
+        if (shadertoyJson == nil) {
+            shadertoyJson = @"111";
+        }
         NSLog(@"shadertoyJson %@", shadertoyJson);
+        
 
         NSDictionary *shaderInfo = [self JSONFromString:shadertoyJson];
         NSString *shadertoyCode = @"";
@@ -77,8 +84,14 @@ static NSString * const MyModuleName = @"diracdrifter.Shadertoy-Screensaver";
         if ([shaderInfo objectForKey:@"Error"] == nil) {
             shadertoyCode = [self getShaderStringFromJSON:shaderInfo];
 
+            // Temporary fix for empty json
+            // TODO: Fix this in a better way
+            if (shadertoyCode == nil) {
+                shadertoyCode = @"111";
+            }
             NSLog(@"shadertoyCode: %@", shadertoyCode);
-
+            
+            
             fragmentShaderString = [header stringByAppendingString:shadertoyCode];
             fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderString);
         }
@@ -117,7 +130,8 @@ static NSString * const MyModuleName = @"diracdrifter.Shadertoy-Screensaver";
 
         NSLog(@"Gl version: %s", glGetString(GL_VERSION));
 
-        [self setAnimationTimeInterval:1/30.0];
+        // Higher framerates can result in GPU overheating
+        [self setAnimationTimeInterval:1/20.0];
         NSLog(@"Setup successful");
     }
     
@@ -236,12 +250,16 @@ GLuint compileShader(GLenum type, NSString *source)
     // We only get the "points" i.e. the scaled resolution of the screen from self.bounds.size
     // We get the real resolution of the screen via GL_VIEWPORT which is useful for fragment shaders
     GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    GLfloat width = (GLfloat)viewport[2];
-    GLfloat height = (GLfloat)viewport[3];
 
+    NSArray *screens = [NSScreen screens];
+    NSScreen *currentScreen = [[self window] screen];
+    NSRect currentScreenFrame = [currentScreen frame];
+    
+    
+    GLfloat width = (GLfloat)currentScreenFrame.size.width;
+    GLfloat height = (GLfloat)currentScreenFrame.size.height;
     glUniform3f(iResolutionLocation, width, height, 1.0);
-
+    
     GLint posAttrib = glGetAttribLocation(self.program, "position");
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(posAttrib);
