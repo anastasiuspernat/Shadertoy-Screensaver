@@ -22,4 +22,9 @@
 @property Shadertoy_ScreensaverConfigSheet *configSheet;
 //@property IBOutlet id configSheet;
 
++ (NSString*)createShadertoyHeader;
++ (NSString *)getShaderStringFromJSON:(NSDictionary *)shaderInfo;
++ (NSDictionary *)JSONFromFile:(NSString *)name;
+
+
 @end

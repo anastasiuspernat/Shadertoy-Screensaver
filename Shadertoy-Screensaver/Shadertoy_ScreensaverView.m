@@ -64,12 +64,12 @@ static NSString * const MyModuleName = @"diracdrifter.Shadertoy-Screensaver";
 
         GLuint vertexShader = compileShader(GL_VERTEX_SHADER, [self loadShader:@"vertexshader.glsl"]);
 
-        NSString *header = [self createShadertoyHeader];
+        NSString *header = [Shadertoy_ScreensaverView createShadertoyHeader];
 
         NSString *shadertoyJson = [defaults stringForKey:@"ShaderJSON"];
 
         // Temporary fix for empty json
-            // TODO: Fix this in a better way
+        // TODO: Fix this in a better way
         if (shadertoyJson == nil) {
             shadertoyJson = @"111";
         }
@@ -82,7 +82,7 @@ static NSString * const MyModuleName = @"diracdrifter.Shadertoy-Screensaver";
         GLuint fragmentShader = 0;
 
         if ([shaderInfo objectForKey:@"Error"] == nil) {
-            shadertoyCode = [self getShaderStringFromJSON:shaderInfo];
+            shadertoyCode = [Shadertoy_ScreensaverView getShaderStringFromJSON:shaderInfo];
 
             // Temporary fix for empty json
             // TODO: Fix this in a better way
@@ -99,8 +99,8 @@ static NSString * const MyModuleName = @"diracdrifter.Shadertoy-Screensaver";
         if (fragmentShader == 0) {
             NSLog(@"Error with fetched shader. Revert to shader loaded from disk");
 
-            shaderInfo = [self JSONFromFile:@"shader.json"];
-            shadertoyCode = [self getShaderStringFromJSON:shaderInfo];
+            shaderInfo = [Shadertoy_ScreensaverView JSONFromFile:@"shader.json"];
+            shadertoyCode = [Shadertoy_ScreensaverView getShaderStringFromJSON:shaderInfo];
 
             fragmentShaderString = [header stringByAppendingString:shadertoyCode];
             fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderString);
@@ -213,6 +213,21 @@ GLuint compileShader(GLenum type, NSString *source)
 
 - (void)drawRect:(NSRect)rect
 {
+
+
+//    NSArray<NSScreen *> *allScreens = [NSScreen screens];
+//        
+////        if ([allScreens count] == 3) { // Ensuring there are exactly 3 monitors
+//            NSScreen *centralScreen = allScreens[1]; // Assuming the central monitor is at index 1
+//            NSRect screenRect = [centralScreen frame];
+//            
+//            // Now set the OpenGL Viewport
+//            glViewport(screenRect.origin.x, screenRect.origin.y, screenRect.size.width, screenRect.size.height);
+////        }
+
+
+
+
     //NSLog(@"drawRect");
     [super drawRect:rect];
     [self.openGLContext makeCurrentContext];
@@ -250,15 +265,27 @@ GLuint compileShader(GLenum type, NSString *source)
     // We only get the "points" i.e. the scaled resolution of the screen from self.bounds.size
     // We get the real resolution of the screen via GL_VIEWPORT which is useful for fragment shaders
     GLint viewport[4];
+//    glGetIntegerv(GL_VIEWPORT, viewport);
+//    GLfloat width = (GLfloat)viewport[2];
+//    GLfloat height = (GLfloat)viewport[3];
+//
+//    glUniform3f(iResolutionLocation, width, height, 1.0);
 
     NSArray *screens = [NSScreen screens];
     NSScreen *currentScreen = [[self window] screen];
     NSRect currentScreenFrame = [currentScreen frame];
     
+//    if ([screens count] > 1) {
+//            NSScreen *secondScreen = screens[2];
+//            currentScreenFrame = [secondScreen frame];
+//        [self.window setFrame:currentScreenFrame display:YES];
+//        }
     
     GLfloat width = (GLfloat)currentScreenFrame.size.width;
     GLfloat height = (GLfloat)currentScreenFrame.size.height;
     glUniform3f(iResolutionLocation, width, height, 1.0);
+    
+    
     
     GLint posAttrib = glGetAttribLocation(self.program, "position");
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -325,7 +352,7 @@ GLuint compileShader(GLenum type, NSString *source)
         GLLog();
 }
 
-- (NSString*)createShadertoyHeader
++ (NSString*)createShadertoyHeader
 {
     NSString *header = @"#version 410 core"
                         "\nuniform vec3 iResolution;\n"
@@ -340,7 +367,7 @@ GLuint compileShader(GLenum type, NSString *source)
     return header;
 }
 
-- (NSString *)getShaderStringFromJSON:(NSDictionary *)shaderInfo
++ (NSString *)getShaderStringFromJSON:(NSDictionary *)shaderInfo
 {
     NSDictionary *shader = [shaderInfo objectForKey:@"Shader"];
     NSDictionary *renderPass = [[shader objectForKey:@"renderpass"] objectAtIndex:0];
@@ -349,7 +376,7 @@ GLuint compileShader(GLenum type, NSString *source)
 }
 
 // Read from string instead
-- (NSDictionary *)JSONFromFile:(NSString *)name
++ (NSDictionary *)JSONFromFile:(NSString *)name
 {
     NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:name ofType:nil];
     NSData *data = [NSData dataWithContentsOfFile:path];

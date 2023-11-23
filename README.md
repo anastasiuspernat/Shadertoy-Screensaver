@@ -12,8 +12,6 @@ but more features will be added in the future.
 
 Open the project in Xcode and build it. Double click on the created `Shadertoy-Screensaver.saver` to install it.
 
-I've only tested the project on Xcode 14.3.1 on an M1 Macbook Pro.
-
 ## Usage
 
 In the options give the Shadertoy shader ID the ID of the shader you want to show. For example
@@ -29,6 +27,7 @@ shader will be downloaded and used as your screensaver.
 * List of shaders
 * Randomize shaders from list on start/over time
 * HDR support
+* Specify FPS limit
 * Random number generator/sahder variable
 * One to one mapping of GL uniforms to the ones used in Shadertoy
 * Multiple buffers (now just supports on image shaders)
