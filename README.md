@@ -1,5 +1,7 @@
 # Shadertoy Screensaver
 
+Based on https://github.com/shaiggon/Shadertoy-Screensaver
+
 ![Screenshot of the screensaver](screenshot/screenshot.png?raw=true)
 
 Load an arbitrary [Shadertoy](https://shadertoy.com) shader by giving a shader ID and
@@ -20,18 +22,19 @@ the shader ID is `dtG3z1`. You also need to provide the API key that you can req
 [https://www.shadertoy.com/myapps](https://www.shadertoy.com/myapps). After pressing `Done` the
 shader will be downloaded and used as your screensaver.
 
-## Development
-
-I've heavily utilized ChatGPT while developing this app as I haven't used Objective-C much
-previously. The project is using OpenGL 4.1 for rendering. This might cause some shaders
-not working exactly as they work in your browser. For example on Shadertoy an uninitialized
-variable may be initialized to zero while the same variable might be garbage in this project.
 
 ## TODO
 
+* Display compiler errors on load
+* List of shaders
+* Randomize shaders from list on start/over time
+* HDR support
+* Random number generator/sahder variable
 * One to one mapping of GL uniforms to the ones used in Shadertoy
 * Multiple buffers (now just supports on image shaders)
 * Clean up code
 * Fix bug where only a part of the shader might be shown on a secondary monitor
 * Allow user to load shaders from disk to allow using shaders which are not available via the API
 * Easier installation
+* Fix this: This might cause some shaders not working exactly as they work in your browser. For example on Shadertoy an uninitialized
+variable may be initialized to zero while the same variable might be garbage in this project.
