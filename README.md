@@ -23,8 +23,8 @@ shader will be downloaded and used as your screensaver.
 
 ## TODO
 
-* Display compiler errors on load
-* List of shaders
+* List of multiple shaders
+* Allow user to load shaders from disk to allow using shaders which are not available via the API
 * Randomize shaders from list on start/over time
 * HDR support
 * Specify FPS limit
@@ -32,8 +32,6 @@ shader will be downloaded and used as your screensaver.
 * One to one mapping of GL uniforms to the ones used in Shadertoy
 * Multiple buffers (now just supports on image shaders)
 * Clean up code
-* Fix bug where only a part of the shader might be shown on a secondary monitor
-* Allow user to load shaders from disk to allow using shaders which are not available via the API
 * Easier installation
 * Fix this: This might cause some shaders not working exactly as they work in your browser. For example on Shadertoy an uninitialized
 variable may be initialized to zero while the same variable might be garbage in this project.
