@@ -11,7 +11,7 @@ import ScreenSaver
 
 class Shadertoy_ScreensaverConfigSheet: NSWindowController {
     
-    static let MyModuleName = "asafari.Shadertoy-Screensaver"
+    static let MyModuleName = "com.Shadertoy-Screensaver"
         
     @IBOutlet weak var shadertoyShaderIDTextField: NSTextField!
     @IBOutlet weak var shadertoyAPIKeyTextField: NSTextField!
