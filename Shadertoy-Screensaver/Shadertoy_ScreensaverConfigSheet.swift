@@ -10,150 +10,155 @@ import Cocoa
 import ScreenSaver
 
 class Shadertoy_ScreensaverConfigSheet: NSWindowController {
-    
-    static let MyModuleName = "com.Shadertoy-Screensaver"
-        
-    @IBOutlet weak var shadertoyShaderIDTextField: NSTextField!
-    @IBOutlet weak var shadertoyAPIKeyTextField: NSTextField!
-    @IBOutlet weak var statusTextField: NSTextField!
 
-    override func windowDidLoad() {
-            super.windowDidLoad()
-            
-            let defaults = ScreenSaverDefaults(forModuleWithName: Shadertoy_ScreensaverConfigSheet.MyModuleName)
-            let shadertoyShaderID = defaults?.string(forKey: "ShadertoyShaderID") ?? ""
-            let shadertoyApiKey = defaults?.string(forKey: "ShadertoyApiKey") ?? ""
-            let shaderJson = defaults?.string(forKey: "ShaderJSON") ?? ""
-            print("shaderJson in configsheet \(shaderJson)")
-            shadertoyShaderIDTextField.stringValue = shadertoyShaderID
-            shadertoyAPIKeyTextField.stringValue = shadertoyApiKey
-            
-            // Set up the outline view's data source and delegate
-            // Enable in the future
-            // outlineView.dataSource = self
-            // outlineView.delegate = self
-        }
-    
-    
-    
-    func validateFragmentShader(shaderString: String) -> String? {
-        let fullShaderString = Shadertoy_ScreensaverView.createShadertoyHeader() + shaderString
+  static let MyModuleName = Bundle.main.bundleIdentifier ?? "com.Shadertoy-Screensaver"
 
-        let shader = glCreateShader(GLenum(GL_FRAGMENT_SHADER))
-        var cSource = (fullShaderString as NSString).utf8String
-        glShaderSource(shader, 1, &cSource, nil)
-        glCompileShader(shader)
+  @IBOutlet weak var shadertoyShaderIDTextField: NSTextField!
+  @IBOutlet weak var shadertoyAPIKeyTextField: NSTextField!
+  @IBOutlet weak var statusTextField: NSTextField!
 
-        var compileSuccess: GLint = 0
-        glGetShaderiv(shader, GLenum(GL_COMPILE_STATUS), &compileSuccess)
-        if compileSuccess == GL_FALSE {
-            var messages = [GLchar](repeating: 0, count: 256)
-            glGetShaderInfoLog(shader, GLsizei(messages.count), nil, &messages)
-            let errorMessage = String(cString: messages)
-            print("Shader Compilation Error: \(errorMessage)")
-            return errorMessage
-        }
+  override func windowDidLoad() {
+    super.windowDidLoad()
 
-        return nil
+    let defaults = ScreenSaverDefaults(
+      forModuleWithName: Shadertoy_ScreensaverConfigSheet.MyModuleName)
+    let shadertoyShaderID = defaults?.string(forKey: "ShadertoyShaderID") ?? ""
+    let shadertoyApiKey = defaults?.string(forKey: "ShadertoyApiKey") ?? ""
+    let shaderJson = defaults?.string(forKey: "ShaderJSON") ?? ""
+    print("shaderJson in configsheet \(shaderJson)")
+    shadertoyShaderIDTextField.stringValue = shadertoyShaderID
+    shadertoyAPIKeyTextField.stringValue = shadertoyApiKey
+
+    // Set up the outline view's data source and delegate
+    // Enable in the future
+    // outlineView.dataSource = self
+    // outlineView.delegate = self
+  }
+
+  func validateFragmentShader(shaderString: String) -> String? {
+    let fullShaderString = Shadertoy_ScreensaverView.createShadertoyHeader() + shaderString
+
+    let shader = glCreateShader(GLenum(GL_FRAGMENT_SHADER))
+    var cSource = (fullShaderString as NSString).utf8String
+    glShaderSource(shader, 1, &cSource, nil)
+    glCompileShader(shader)
+
+    var compileSuccess: GLint = 0
+    glGetShaderiv(shader, GLenum(GL_COMPILE_STATUS), &compileSuccess)
+    if compileSuccess == GL_FALSE {
+      var messages = [GLchar](repeating: 0, count: 256)
+      glGetShaderInfoLog(shader, GLsizei(messages.count), nil, &messages)
+      let errorMessage = String(cString: messages)
+      print("Shader Compilation Error: \(errorMessage)")
+      return errorMessage
     }
-    
-    
-    @IBAction func doneButtonClicked(_ sender: Any) {
-        let defaults = ScreenSaverDefaults(forModuleWithName: Shadertoy_ScreensaverConfigSheet.MyModuleName)
 
-        let currentShaderID = shadertoyShaderIDTextField.stringValue
-        defaults?.set(currentShaderID, forKey: "ShadertoyShaderID")
+    return nil
+  }
 
-        let currentApiKey = shadertoyAPIKeyTextField.stringValue
-        defaults?.set(currentApiKey, forKey: "ShadertoyApiKey")
+  @IBAction func doneButtonClicked(_ sender: Any) {
+    let defaults = ScreenSaverDefaults(
+      forModuleWithName: Shadertoy_ScreensaverConfigSheet.MyModuleName)
 
-        let requestUrl = createRequestString(shaderID: currentShaderID, apiKey: currentApiKey)
+    let currentShaderID = shadertoyShaderIDTextField.stringValue
+    defaults?.set(currentShaderID, forKey: "ShadertoyShaderID")
 
-        statusTextField.stringValue = "Fetching shader..."
-        
-        fetchData(completion: { data, error, response in
-            DispatchQueue.main.async {
-                guard let data = data, error == nil, response.statusCode == 200 else {
-                    self.statusTextField.stringValue = "Error fetching shader"
-                    return
-                }
+    let currentApiKey = shadertoyAPIKeyTextField.stringValue
+    defaults?.set(currentApiKey, forKey: "ShadertoyApiKey")
 
-                self.statusTextField.stringValue = "Fetching shader was successful"
+    let requestUrl = createRequestString(shaderID: currentShaderID, apiKey: currentApiKey)
 
-                if let shaderJson = String(data: data, encoding: .utf8) {
-                    print("shaderJson: \(shaderJson)")
+    statusTextField.stringValue = "Fetching shader..."
 
-                    if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
-                       let jsonDictionary = jsonObject as? [String: Any] {
-                        
-                        if let errorMessage = jsonDictionary["Error"] as? String {
-                            self.statusTextField.stringValue = "Invalid shader: \(errorMessage)"
-                        } else {
-                            if let errorMessageCompile = self.validateFragmentShader(shaderString: Shadertoy_ScreensaverView.getShaderStringFromJSON(shaderInfo: jsonDictionary)) {
-                                self.statusTextField.stringValue = "Couldn't compile shader: \(errorMessageCompile)"
+    fetchData(
+      completion: { data, error, response in
+        DispatchQueue.main.async {
+          guard let data = data, error == nil, response.statusCode == 200 else {
+            self.statusTextField.stringValue = "Error fetching shader"
+            return
+          }
 
-                                let alert = NSAlert()
-                                alert.messageText = "Couldn't compile shader"
+          self.statusTextField.stringValue = "Fetching shader was successful"
 
-                                // Create a scrollable NSTextView
-                                let scrollTextView = NSScrollView(frame: NSRect(x: 0, y: 0, width: 300, height: 200))
-                                scrollTextView.hasVerticalScroller = true
-                                scrollTextView.borderType = .bezelBorder
+          if let shaderJson = String(data: data, encoding: .utf8) {
+            print("shaderJson: \(shaderJson)")
 
-                                let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 290, height: 190))
-                                textView.isEditable = false
-                                textView.string = errorMessageCompile
-                                scrollTextView.documentView = textView
+            if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+              let jsonDictionary = jsonObject as? [String: Any]
+            {
 
-                                // Add the text view to the alert
-                                alert.accessoryView = scrollTextView
+              if let errorMessage = jsonDictionary["Error"] as? String {
+                self.statusTextField.stringValue = "Invalid shader: \(errorMessage)"
+              } else {
+                if let errorMessageCompile = self.validateFragmentShader(
+                  shaderString: Shadertoy_ScreensaverView.getShaderStringFromJSON(
+                    shaderInfo: jsonDictionary))
+                {
+                  self.statusTextField.stringValue =
+                    "Couldn't compile shader: \(errorMessageCompile)"
 
-                                // Display the alert
-                                alert.runModal()
+                  let alert = NSAlert()
+                  alert.messageText = "Couldn't compile shader"
 
-                            } else {
-                                defaults?.set(shaderJson, forKey: "ShaderJSON")
-                                defaults?.synchronize()
-                            }
-                        }
-                    } else {
-                        self.statusTextField.stringValue = "Invalid data received from Shadertoy"
-                    }
+                  // Create a scrollable NSTextView
+                  let scrollTextView = NSScrollView(
+                    frame: NSRect(x: 0, y: 0, width: 300, height: 200))
+                  scrollTextView.hasVerticalScroller = true
+                  scrollTextView.borderType = .bezelBorder
+
+                  let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 290, height: 190))
+                  textView.isEditable = false
+                  textView.string = errorMessageCompile
+                  scrollTextView.documentView = textView
+
+                  // Add the text view to the alert
+                  alert.accessoryView = scrollTextView
+
+                  // Display the alert
+                  alert.runModal()
+
                 } else {
-                    self.statusTextField.stringValue = "Error processing shader data"
+                  defaults?.set(shaderJson, forKey: "ShaderJSON")
+                  defaults?.synchronize()
                 }
+              }
+            } else {
+              self.statusTextField.stringValue = "Invalid data received from Shadertoy"
             }
-        }, fullURL: requestUrl)
-
-        defaults?.synchronize()
-    }
-
-    func createRequestString(shaderID: String, apiKey: String) -> String {
-        let baseUrl = "https://www.shadertoy.com/api/v1/shaders/"
-        let urlWithShader = baseUrl + shaderID
-        let urlWithApiKey = urlWithShader + "?key=" + apiKey
-        return urlWithApiKey
-    }
-
-    func fetchData(completion: @escaping (Data?, NSError?, HTTPURLResponse) -> Void, fullURL: String) {
-        guard let url = URL(string: fullURL) else { return }
-        let request = URLRequest(url: url)
-        let session = URLSession.shared
-
-        let task = session.dataTask(with: request) { data, response, error in
-            if let response = response as? HTTPURLResponse {
-                completion(data, error as NSError?, response)
-            }
+          } else {
+            self.statusTextField.stringValue = "Error processing shader data"
+          }
         }
-        task.resume()
-    }
-    
-    
-    @IBAction func closeButtonClicked(_ sender: Any) {
-        if let window = self.window {
-                window.sheetParent?.endSheet(window)
-            }
-    }
+      }, fullURL: requestUrl)
 
+    defaults?.synchronize()
+  }
+
+  func createRequestString(shaderID: String, apiKey: String) -> String {
+    let baseUrl = "https://www.shadertoy.com/api/v1/shaders/"
+    let urlWithShader = baseUrl + shaderID
+    let urlWithApiKey = urlWithShader + "?key=" + apiKey
+    return urlWithApiKey
+  }
+
+  func fetchData(completion: @escaping (Data?, NSError?, HTTPURLResponse) -> Void, fullURL: String)
+  {
+    guard let url = URL(string: fullURL) else { return }
+    let request = URLRequest(url: url)
+    let session = URLSession.shared
+
+    let task = session.dataTask(with: request) { data, response, error in
+      if let response = response as? HTTPURLResponse {
+        completion(data, error as NSError?, response)
+      }
+    }
+    task.resume()
+  }
+
+  @IBAction func closeButtonClicked(_ sender: Any) {
+    if let window = self.window {
+      window.sheetParent?.endSheet(window)
+    }
+  }
 
 }
