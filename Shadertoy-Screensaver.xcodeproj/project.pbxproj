@@ -7,105 +7,85 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		980DFF022A740CC6004DAC2C /* shader.json in Resources */ = {isa = PBXBuildFile; fileRef = 980DFF012A740CC5004DAC2C /* shader.json */; };
-		9812FC632A619A860041D5DF /* Shadertoy_ScreensaverView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9812FC622A619A860041D5DF /* Shadertoy_ScreensaverView.h */; };
-		9812FC652A619A860041D5DF /* Shadertoy_ScreensaverView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9812FC642A619A860041D5DF /* Shadertoy_ScreensaverView.m */; };
-		9812FC6D2A6AF1980041D5DF /* fragmentshader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 9812FC6B2A6AF1980041D5DF /* fragmentshader.glsl */; };
-		9812FC6E2A6AF1980041D5DF /* vertexshader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 9812FC6C2A6AF1980041D5DF /* vertexshader.glsl */; };
-		9812FC712A6D430A0041D5DF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9812FC702A6D430A0041D5DF /* OpenGL.framework */; };
-		98F648332A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 98F648302A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.h */; };
-		98F648342A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F648312A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.m */; };
-		98F648352A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 98F648322A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.xib */; };
+		DD9C607D2B3A371100ABF151 /* Shadertoy_ScreensaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9C607C2B3A371100ABF151 /* Shadertoy_ScreensaverView.swift */; };
+		DD9C60802B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9C607E2B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.swift */; };
+		DD9C60812B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD9C607F2B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.xib */; };
+		DDB17FC32B3A799D00C8509F /* fragmentshader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = DDB17FC12B3A799D00C8509F /* fragmentshader.glsl */; };
+		DDB17FC42B3A799D00C8509F /* vertexshader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = DDB17FC22B3A799D00C8509F /* vertexshader.glsl */; };
+		DDB17FC62B3A8D4D00C8509F /* shader.json in Resources */ = {isa = PBXBuildFile; fileRef = DDB17FC52B3A8D4D00C8509F /* shader.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		980DFF012A740CC5004DAC2C /* shader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = shader.json; sourceTree = "<group>"; };
-		9812FC5F2A619A860041D5DF /* Shadertoy-Screensaver.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shadertoy-Screensaver.saver"; sourceTree = BUILT_PRODUCTS_DIR; };
-		9812FC622A619A860041D5DF /* Shadertoy_ScreensaverView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shadertoy_ScreensaverView.h; sourceTree = "<group>"; };
-		9812FC642A619A860041D5DF /* Shadertoy_ScreensaverView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Shadertoy_ScreensaverView.m; sourceTree = "<group>"; };
-		9812FC6B2A6AF1980041D5DF /* fragmentshader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = fragmentshader.glsl; path = "Shadertoy-Screensaver/fragmentshader.glsl"; sourceTree = "<group>"; };
-		9812FC6C2A6AF1980041D5DF /* vertexshader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vertexshader.glsl; path = "Shadertoy-Screensaver/vertexshader.glsl"; sourceTree = "<group>"; };
-		9812FC702A6D430A0041D5DF /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		98F648302A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shadertoy_ScreensaverConfigSheet.h; sourceTree = "<group>"; };
-		98F648312A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Shadertoy_ScreensaverConfigSheet.m; sourceTree = "<group>"; };
-		98F648322A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Shadertoy_ScreensaverConfigSheet.xib; sourceTree = "<group>"; };
+		DD9C60702B3A363F00ABF151 /* Shadertoy-Screensaver.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shadertoy-Screensaver.saver"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD9C607C2B3A371100ABF151 /* Shadertoy_ScreensaverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shadertoy_ScreensaverView.swift; sourceTree = "<group>"; };
+		DD9C607E2B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shadertoy_ScreensaverConfigSheet.swift; sourceTree = "<group>"; };
+		DD9C607F2B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Shadertoy_ScreensaverConfigSheet.xib; sourceTree = "<group>"; };
+		DDB17FC12B3A799D00C8509F /* fragmentshader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragmentshader.glsl; sourceTree = "<group>"; };
+		DDB17FC22B3A799D00C8509F /* vertexshader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = vertexshader.glsl; sourceTree = "<group>"; };
+		DDB17FC52B3A8D4D00C8509F /* shader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = shader.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		9812FC5C2A619A860041D5DF /* Frameworks */ = {
+		DD9C606D2B3A363F00ABF151 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9812FC712A6D430A0041D5DF /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9812FC552A619A860041D5DF = {
+		DD9C60662B3A363F00ABF151 = {
 			isa = PBXGroup;
 			children = (
-				98F648302A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.h */,
-				98F648312A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.m */,
-				98F648322A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.xib */,
-				9812FC6B2A6AF1980041D5DF /* fragmentshader.glsl */,
-				9812FC6C2A6AF1980041D5DF /* vertexshader.glsl */,
-				9812FC612A619A860041D5DF /* Shadertoy-Screensaver */,
-				9812FC602A619A860041D5DF /* Products */,
-				9812FC6F2A6D430A0041D5DF /* Frameworks */,
+				DDB17FC52B3A8D4D00C8509F /* shader.json */,
+				DDB17FC12B3A799D00C8509F /* fragmentshader.glsl */,
+				DDB17FC22B3A799D00C8509F /* vertexshader.glsl */,
+				DD9C60722B3A363F00ABF151 /* Shadertoy-Screensaver */,
+				DD9C60712B3A363F00ABF151 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		9812FC602A619A860041D5DF /* Products */ = {
+		DD9C60712B3A363F00ABF151 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9812FC5F2A619A860041D5DF /* Shadertoy-Screensaver.saver */,
+				DD9C60702B3A363F00ABF151 /* Shadertoy-Screensaver.saver */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9812FC612A619A860041D5DF /* Shadertoy-Screensaver */ = {
+		DD9C60722B3A363F00ABF151 /* Shadertoy-Screensaver */ = {
 			isa = PBXGroup;
 			children = (
-				980DFF012A740CC5004DAC2C /* shader.json */,
-				9812FC622A619A860041D5DF /* Shadertoy_ScreensaverView.h */,
-				9812FC642A619A860041D5DF /* Shadertoy_ScreensaverView.m */,
+				DD9C607C2B3A371100ABF151 /* Shadertoy_ScreensaverView.swift */,
+				DD9C607E2B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.swift */,
+				DD9C607F2B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.xib */,
 			);
 			path = "Shadertoy-Screensaver";
-			sourceTree = "<group>";
-		};
-		9812FC6F2A6D430A0041D5DF /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				9812FC702A6D430A0041D5DF /* OpenGL.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		9812FC5A2A619A860041D5DF /* Headers */ = {
+		DD9C606B2B3A363F00ABF151 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9812FC632A619A860041D5DF /* Shadertoy_ScreensaverView.h in Headers */,
-				98F648332A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		9812FC5E2A619A860041D5DF /* Shadertoy-Screensaver */ = {
+		DD9C606F2B3A363F00ABF151 /* Shadertoy-Screensaver */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9812FC682A619A860041D5DF /* Build configuration list for PBXNativeTarget "Shadertoy-Screensaver" */;
+			buildConfigurationList = DD9C60792B3A363F00ABF151 /* Build configuration list for PBXNativeTarget "Shadertoy-Screensaver" */;
 			buildPhases = (
-				9812FC5A2A619A860041D5DF /* Headers */,
-				9812FC5B2A619A860041D5DF /* Sources */,
-				9812FC5C2A619A860041D5DF /* Frameworks */,
-				9812FC5D2A619A860041D5DF /* Resources */,
+				DD9C606B2B3A363F00ABF151 /* Headers */,
+				DD9C606C2B3A363F00ABF151 /* Sources */,
+				DD9C606D2B3A363F00ABF151 /* Frameworks */,
+				DD9C606E2B3A363F00ABF151 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -113,24 +93,25 @@
 			);
 			name = "Shadertoy-Screensaver";
 			productName = "Shadertoy-Screensaver";
-			productReference = 9812FC5F2A619A860041D5DF /* Shadertoy-Screensaver.saver */;
+			productReference = DD9C60702B3A363F00ABF151 /* Shadertoy-Screensaver.saver */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		9812FC562A619A860041D5DF /* Project object */ = {
+		DD9C60672B3A363F00ABF151 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					9812FC5E2A619A860041D5DF = {
-						CreatedOnToolsVersion = 14.3.1;
+					DD9C606F2B3A363F00ABF151 = {
+						CreatedOnToolsVersion = 15.0;
+						LastSwiftMigration = 1500;
 					};
 				};
 			};
-			buildConfigurationList = 9812FC592A619A860041D5DF /* Build configuration list for PBXProject "Shadertoy-Screensaver" */;
+			buildConfigurationList = DD9C606A2B3A363F00ABF151 /* Build configuration list for PBXProject "Shadertoy-Screensaver" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -138,47 +119,48 @@
 				en,
 				Base,
 			);
-			mainGroup = 9812FC552A619A860041D5DF;
-			productRefGroup = 9812FC602A619A860041D5DF /* Products */;
+			mainGroup = DD9C60662B3A363F00ABF151;
+			productRefGroup = DD9C60712B3A363F00ABF151 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9812FC5E2A619A860041D5DF /* Shadertoy-Screensaver */,
+				DD9C606F2B3A363F00ABF151 /* Shadertoy-Screensaver */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		9812FC5D2A619A860041D5DF /* Resources */ = {
+		DD9C606E2B3A363F00ABF151 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9812FC6E2A6AF1980041D5DF /* vertexshader.glsl in Resources */,
-				9812FC6D2A6AF1980041D5DF /* fragmentshader.glsl in Resources */,
-				980DFF022A740CC6004DAC2C /* shader.json in Resources */,
-				98F648352A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.xib in Resources */,
+				DDB17FC42B3A799D00C8509F /* vertexshader.glsl in Resources */,
+				DDB17FC32B3A799D00C8509F /* fragmentshader.glsl in Resources */,
+				DDB17FC62B3A8D4D00C8509F /* shader.json in Resources */,
+				DD9C60812B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9812FC5B2A619A860041D5DF /* Sources */ = {
+		DD9C606C2B3A363F00ABF151 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9812FC652A619A860041D5DF /* Shadertoy_ScreensaverView.m in Sources */,
-				98F648342A7151DE00E550DB /* Shadertoy_ScreensaverConfigSheet.m in Sources */,
+				DD9C607D2B3A371100ABF151 /* Shadertoy_ScreensaverView.swift in Sources */,
+				DD9C60802B3A657600ABF151 /* Shadertoy_ScreensaverConfigSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		9812FC662A619A860041D5DF /* Debug */ = {
+		DD9C60772B3A363F00ABF151 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -189,7 +171,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = NO;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -211,7 +193,8 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -220,12 +203,14 @@
 					"$(inherited)",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -233,10 +218,11 @@
 			};
 			name = Debug;
 		};
-		9812FC672A619A860041D5DF /* Release */ = {
+		DD9C60782B3A363F00ABF151 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -247,7 +233,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = NO;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -269,24 +255,28 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 			};
 			name = Release;
 		};
-		9812FC692A619A860041D5DF /* Debug */ = {
+		DD9C607A2B3A363F00ABF151 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -294,17 +284,21 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSPrincipalClass = Shadertoy_ScreensaverView;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "diracdrifter.Shadertoy-Screensaver";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Shadertoy-Screensaver";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = saver;
 			};
 			name = Debug;
 		};
-		9812FC6A2A619A860041D5DF /* Release */ = {
+		DD9C607B2B3A363F00ABF151 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -312,10 +306,12 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSPrincipalClass = Shadertoy_ScreensaverView;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "diracdrifter.Shadertoy-Screensaver";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Shadertoy-Screensaver";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = saver;
 			};
 			name = Release;
@@ -323,25 +319,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9812FC592A619A860041D5DF /* Build configuration list for PBXProject "Shadertoy-Screensaver" */ = {
+		DD9C606A2B3A363F00ABF151 /* Build configuration list for PBXProject "Shadertoy-Screensaver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9812FC662A619A860041D5DF /* Debug */,
-				9812FC672A619A860041D5DF /* Release */,
+				DD9C60772B3A363F00ABF151 /* Debug */,
+				DD9C60782B3A363F00ABF151 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9812FC682A619A860041D5DF /* Build configuration list for PBXNativeTarget "Shadertoy-Screensaver" */ = {
+		DD9C60792B3A363F00ABF151 /* Build configuration list for PBXNativeTarget "Shadertoy-Screensaver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9812FC692A619A860041D5DF /* Debug */,
-				9812FC6A2A619A860041D5DF /* Release */,
+				DD9C607A2B3A363F00ABF151 /* Debug */,
+				DD9C607B2B3A363F00ABF151 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 9812FC562A619A860041D5DF /* Project object */;
+	rootObject = DD9C60672B3A363F00ABF151 /* Project object */;
 }
