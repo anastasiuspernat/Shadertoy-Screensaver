@@ -16,6 +16,8 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
   @IBOutlet weak var shadertoyShaderIDTextField: NSTextField!
   @IBOutlet weak var shadertoyAPIKeyTextField: NSTextField!
   @IBOutlet weak var statusTextField: NSTextField!
+  @IBOutlet weak var separateScreensCheckbox: NSButton!
+  @IBOutlet weak var randomizeEvery5Checkbox: NSButton!
 
   override func windowDidLoad() {
     super.windowDidLoad()
@@ -25,9 +27,14 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
     let shadertoyShaderID = defaults?.string(forKey: "ShadertoyShaderID") ?? ""
     let shadertoyApiKey = defaults?.string(forKey: "ShadertoyApiKey") ?? ""
     let shaderJson = defaults?.string(forKey: "ShaderJSON") ?? ""
-    print("shaderJson in configsheet \(shaderJson)")
+    let separateScreens = defaults?.bool(forKey: "separateScreens") ?? false
+    let randomizeEvery5 = defaults?.bool(forKey: "randomizeEvery5") ?? false
+
+    NSLog("shaderJson in configsheet \(shaderJson)")
     shadertoyShaderIDTextField.stringValue = shadertoyShaderID
     shadertoyAPIKeyTextField.stringValue = shadertoyApiKey
+    separateScreensCheckbox.state = separateScreens ? .on : .off
+    randomizeEvery5Checkbox.state = randomizeEvery5 ? .on : .off
 
     // Set up the outline view's data source and delegate
     // Enable in the future
@@ -49,7 +56,7 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
       var messages = [GLchar](repeating: 0, count: 256)
       glGetShaderInfoLog(shader, GLsizei(messages.count), nil, &messages)
       let errorMessage = String(cString: messages)
-      print("Shader Compilation Error: \(errorMessage)")
+      NSLog("Shader Compilation Error: \(errorMessage)")
       return errorMessage
     }
 
@@ -60,78 +67,87 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
     let defaults = ScreenSaverDefaults(
       forModuleWithName: Shadertoy_ScreensaverConfigSheet.MyModuleName)
 
-    let currentShaderID = shadertoyShaderIDTextField.stringValue
-    defaults?.set(currentShaderID, forKey: "ShadertoyShaderID")
+    let shaderIDs = shadertoyShaderIDTextField.stringValue.split(separator: ",").map {
+      String($0).trimmingCharacters(in: .whitespaces)
+    }
+    let shadertoyApiKey = shadertoyAPIKeyTextField.stringValue
+    defaults?.set(shaderIDs.joined(separator: ","), forKey: "ShadertoyShaderID")
+    defaults?.set(shadertoyApiKey, forKey: "ShadertoyApiKey")
 
-    let currentApiKey = shadertoyAPIKeyTextField.stringValue
-    defaults?.set(currentApiKey, forKey: "ShadertoyApiKey")
+    var shadersArray = [[String: Any]]()
 
-    let requestUrl = createRequestString(shaderID: currentShaderID, apiKey: currentApiKey)
+    let dispatchQueue = DispatchQueue(label: "shaderQueue", attributes: [])
+    dispatchQueue.async {
+      var hasErrorOccurred = false
 
-    statusTextField.stringValue = "Fetching shader..."
+      for shaderID in shaderIDs {
+        guard !hasErrorOccurred else { break }
 
-    fetchData(
-      completion: { data, error, response in
-        DispatchQueue.main.async {
-          guard let data = data, error == nil, response.statusCode == 200 else {
-            self.statusTextField.stringValue = "Error fetching shader"
-            return
-          }
+        let requestUrl = self.createRequestString(shaderID: shaderID, apiKey: shadertoyApiKey)
+        let semaphore = DispatchSemaphore(value: 0)
 
-          self.statusTextField.stringValue = "Fetching shader was successful"
+        self.fetchData(
+          completion: { data, error, response in
+            DispatchQueue.main.async {
+              guard let data = data, error == nil, response.statusCode == 200 else {
+                self.statusTextField.stringValue = "Error fetching shader for ID: \(shaderID)"
+                hasErrorOccurred = true
+                semaphore.signal()
+                return
+              }
 
-          if let shaderJson = String(data: data, encoding: .utf8) {
-            print("shaderJson: \(shaderJson)")
-
-            if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
-              let jsonDictionary = jsonObject as? [String: Any]
-            {
-
-              if let errorMessage = jsonDictionary["Error"] as? String {
-                self.statusTextField.stringValue = "Invalid shader: \(errorMessage)"
-              } else {
-                if let errorMessageCompile = self.validateFragmentShader(
+              if let shaderJson = try? JSONSerialization.jsonObject(with: data, options: []),
+                let jsonDictionary = shaderJson as? [String: Any]
+              {
+                if let errorMessage = jsonDictionary["Error"] as? String {
+                  self.showAlert(with: errorMessage)
+                  hasErrorOccurred = true
+                } else if let errorMessageCompile = self.validateFragmentShader(
                   shaderString: Shadertoy_ScreensaverView.getShaderStringFromJSON(
                     shaderInfo: jsonDictionary))
                 {
-                  self.statusTextField.stringValue =
-                    "Couldn't compile shader: \(errorMessageCompile)"
-
-                  let alert = NSAlert()
-                  alert.messageText = "Couldn't compile shader"
-
-                  // Create a scrollable NSTextView
-                  let scrollTextView = NSScrollView(
-                    frame: NSRect(x: 0, y: 0, width: 300, height: 200))
-                  scrollTextView.hasVerticalScroller = true
-                  scrollTextView.borderType = .bezelBorder
-
-                  let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 290, height: 190))
-                  textView.isEditable = false
-                  textView.string = errorMessageCompile
-                  scrollTextView.documentView = textView
-
-                  // Add the text view to the alert
-                  alert.accessoryView = scrollTextView
-
-                  // Display the alert
-                  alert.runModal()
-
+                  self.showAlert(with: errorMessageCompile)
+                  hasErrorOccurred = true
                 } else {
-                  defaults?.set(shaderJson, forKey: "ShaderJSON")
-                  defaults?.synchronize()
+                  shadersArray.append(jsonDictionary)
                 }
+              } else {
+                self.statusTextField.stringValue =
+                  "Invalid data received for shader ID: \(shaderID)"
+                hasErrorOccurred = true
               }
-            } else {
-              self.statusTextField.stringValue = "Invalid data received from Shadertoy"
+              semaphore.signal()
             }
-          } else {
-            self.statusTextField.stringValue = "Error processing shader data"
+          }, fullURL: requestUrl)
+
+        semaphore.wait()
+      }
+
+      DispatchQueue.main.async {
+        if !hasErrorOccurred {
+          if let shadersData = try? JSONSerialization.data(
+            withJSONObject: shadersArray, options: []),
+            let shadersString = String(data: shadersData, encoding: .utf8)
+          {
+            NSLog("### Saved shaderString \(shadersString)")
+            defaults?.set(shadersString, forKey: "ShaderJSONs")
+            self.statusTextField.stringValue = "All shaders processed successfully"
           }
         }
-      }, fullURL: requestUrl)
+        defaults?.synchronize()
+      }
+    }
+  }
 
-    defaults?.synchronize()
+  func showAlert(with message: String) {
+    DispatchQueue.main.async {
+      let alert = NSAlert()
+      alert.messageText = "Shader Error"
+      alert.informativeText = message
+      alert.alertStyle = .warning
+      alert.addButton(withTitle: "OK")
+      alert.runModal()
+    }
   }
 
   func createRequestString(shaderID: String, apiKey: String) -> String {
@@ -157,6 +173,15 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
 
   @IBAction func closeButtonClicked(_ sender: Any) {
     if let window = self.window {
+      let defaults = ScreenSaverDefaults(
+        forModuleWithName: Shadertoy_ScreensaverConfigSheet.MyModuleName)
+      let separateScreens = separateScreensCheckbox.state == .on
+      let randomizeEvery5 = randomizeEvery5Checkbox.state == .on
+
+      defaults?.set(separateScreens, forKey: "separateScreens")
+      defaults?.set(randomizeEvery5, forKey: "randomizeEvery5")
+      defaults?.synchronize()
+
       window.sheetParent?.endSheet(window)
     }
   }

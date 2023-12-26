@@ -16,6 +16,12 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
   var iFrame: Int = 0
   var configSheet: NSWindow?
 
+  var separateScreens: Bool = true
+  var randomizeEvery5: Bool = false
+  var lastRandomizationTime: Date = Date()
+  var shaderPrograms: [GLuint] = []  // Array to store multiple shader programs
+  var shaderOrder: [Int] = []  // Order of shaders for each screen
+
   static let MyModuleName = Bundle.main.bundleIdentifier ?? "com.Shadertoy-Screensaver"
 
   lazy var configurationWindowController: Shadertoy_ScreensaverConfigSheet =
@@ -45,94 +51,151 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     glView = NSOpenGLView(frame: NSZeroRect, pixelFormat: format)
 
     if glView == nil {
-      print("Couldn't initialize OpenGL view.")
+      NSLog("###Couldn't initialize OpenGL view.")
       return nil
     }
 
     self.addSubview(glView!)
     self.setUpOpenGL()
 
-    self.program = glCreateProgram()
+    self.separateScreens = defaults?.bool(forKey: "separateScreens") ?? false
+    self.randomizeEvery5 = defaults?.bool(forKey: "randomizeEvery5") ?? false
 
-    let vertexShader = compileShader(
-      type: GLenum(GL_VERTEX_SHADER), source: self.loadShader(name: "vertexshader.glsl")!)
+    // 111 - Temporary fix for empty json
+    // TODO: Fix this in a better way - or it won't run draw() when shader is empty on start
+    let shadertoyJson = defaults?.string(forKey: "ShaderJSONs") ?? "[{\"Error\": \"Default\"}]"
 
-    let header = Shadertoy_ScreensaverView.createShadertoyHeader()
+    NSLog("###shadertoyJson: \(String(describing: shadertoyJson))")
 
-      // 111 - Temporary fix for empty json
-      // TODO: Fix this in a better way - or it won't run draw() when shader is empty on start
-    let shadertoyJson = defaults?.string(forKey: "ShaderJSON") ?? "111"
+    let shaderInfos = self.JSONFromString(jsonString: shadertoyJson)
 
-    print("shadertoyJson \(String(describing: shadertoyJson))")
+    shaderPrograms = []
 
-    var shaderInfo = self.JSONFromString(jsonString: shadertoyJson)
-    var shadertoyCode = ""
-    var fragmentShaderString = ""
-    var fragmentShader: GLuint = 0
+    NSLog("###shaderInfos: \(String(describing: shaderInfos))")
 
-    if shaderInfo["Error"] == nil {
-      shadertoyCode = Shadertoy_ScreensaverView.getShaderStringFromJSON(shaderInfo: shaderInfo)
+    for shaderInfo in shaderInfos {
+      var shadertoyCode = ""
+      var fragmentShaderString = ""
+      var fragmentShader: GLuint = 0
+      program = glCreateProgram()
 
-      // Temporary fix for empty json
-      // TODO: Fix this in a better way - or it won't run draw() when shader is empty on start
-      shadertoyCode = shadertoyCode.isEmpty ? "111" : shadertoyCode
+      let vertexShader = compileShader(
+        type: GLenum(GL_VERTEX_SHADER), source: self.loadShader(name: "vertexshader.glsl")!)
 
-      print("shadertoyCode: \(String(describing: shadertoyCode))")
+      let header = Shadertoy_ScreensaverView.createShadertoyHeader()
 
-      fragmentShaderString = header + shadertoyCode
-      fragmentShader = compileShader(type: GLenum(GL_FRAGMENT_SHADER), source: fragmentShaderString)
+      NSLog("####1")
+
+      if shaderInfo["Error"] == nil || shaderInfo["Default"] == nil {
+        NSLog("####2 YES")
+        shadertoyCode = Shadertoy_ScreensaverView.getShaderStringFromJSON(shaderInfo: shaderInfo)
+
+        // Temporary fix for empty json
+        // TODO: Fix this in a better way - or it won't run draw() when shader is empty on start
+        shadertoyCode = shadertoyCode.isEmpty ? "111" : shadertoyCode
+
+        NSLog("###shadertoyCode: \(String(describing: shadertoyCode))")
+
+        fragmentShaderString = header + shadertoyCode
+        fragmentShader = compileShader(
+          type: GLenum(GL_FRAGMENT_SHADER), source: fragmentShaderString)
+      }
+      NSLog("####3")
+
+      if fragmentShader == 0 {
+        NSLog("####4")
+        NSLog("###Error with fetched shader. Revert to shader loaded from disk")
+
+        let defaultShaderInfo = Shadertoy_ScreensaverView.JSONFromFile(name: "shader.json")
+        shadertoyCode = Shadertoy_ScreensaverView.getShaderStringFromJSON(
+          shaderInfo: defaultShaderInfo)
+
+        fragmentShaderString = header + shadertoyCode
+        fragmentShader = compileShader(
+          type: GLenum(GL_FRAGMENT_SHADER), source: fragmentShaderString)
+      }
+
+      glAttachShader(program, vertexShader)
+      glAttachShader(program, fragmentShader)
+      glLinkProgram(program)
+
+      var success: GLint = 0
+      glGetProgramiv(program, GLenum(GL_LINK_STATUS), &success)
+      if success == GL_FALSE {
+        var infoLog = [GLchar](repeating: 0, count: 512)
+        glGetProgramInfoLog(program, GLsizei(infoLog.count), nil, &infoLog)
+        let infoLogString = String(cString: infoLog)
+        NSLog("###Failed to link shader program: \(infoLogString)")
+      }
+
+      glUseProgram(program)
+
+      var vbo: GLuint = 0
+      var vao: GLuint = 0
+      glGenVertexArrays(1, &vao)
+      glGenBuffers(1, &vbo)
+
+      vertexArrayObject = vao
+      vertexBufferObject = vbo
+
+      NSLog(
+        "###Gl version: \(String(describing: String(cString: glGetString(GLenum(GL_VERSION)))))")
+
+      // Higher framerates can result in GPU overheating
+      // [self setAnimationTimeInterval:1/20.0]; // This should be set in the appropriate place in Swift
+      NSLog("###Setup successful")
+
+      shaderPrograms.append(program)
     }
 
-    if fragmentShader == 0 {
-      print("Error with fetched shader. Revert to shader loaded from disk")
+    shaderOrder = Array(0..<shaderPrograms.count)  // Initialize the order of shaders
 
-      shaderInfo = Shadertoy_ScreensaverView.JSONFromFile(name: "shader.json")
-      shadertoyCode = Shadertoy_ScreensaverView.getShaderStringFromJSON(shaderInfo: shaderInfo)
-
-      fragmentShaderString = header + shadertoyCode
-      fragmentShader = compileShader(type: GLenum(GL_FRAGMENT_SHADER), source: fragmentShaderString)
-    }
-
-    glAttachShader(program, vertexShader)
-    glAttachShader(program, fragmentShader)
-    glLinkProgram(program)
-
-    var success: GLint = 0
-    glGetProgramiv(program, GLenum(GL_LINK_STATUS), &success)
-    if success == GL_FALSE {
-      var infoLog = [GLchar](repeating: 0, count: 512)
-      glGetProgramInfoLog(program, GLsizei(infoLog.count), nil, &infoLog)
-      let infoLogString = String(cString: infoLog)
-      print("Failed to link shader program: \(infoLogString)")
-    }
-
-    glUseProgram(program)
-
-    var vbo: GLuint = 0
-    var vao: GLuint = 0
-    glGenVertexArrays(1, &vao)
-    glGenBuffers(1, &vbo)
-
-    vertexArrayObject = vao
-    vertexBufferObject = vbo
-
-    print("Gl version: \(String(describing: String(cString: glGetString(GLenum(GL_VERSION)))))")
-
-    // Higher framerates can result in GPU overheating
-    // [self setAnimationTimeInterval:1/20.0]; // This should be set in the appropriate place in Swift
-    print("Setup successful")
   }
-
 
   required init?(coder: NSCoder) {
     fatalError("### required init(coder:) has not been implemented")
   }
 
+  func randomizeShaders() {
+    if separateScreens {
+      shaderOrder.shuffle()
+    } else {
+      // Randomize for a single shader on all screens
+      shaderOrder = [Int.random(in: 0..<shaderPrograms.count)]
+    }
+  }
+
+  func getCurrentScreenIndex() -> Int {
+    guard let windowScreen = self.window?.screen else {
+      NSLog("### ScreenSaverView is not attached to a window/screen.")
+      return 0
+    }
+
+    let screens = NSScreen.screens
+    return screens.firstIndex(of: windowScreen) ?? 0
+  }
 
   override func draw(_ dirtyRect: NSRect) {
 
     super.draw(dirtyRect)
     self.openGLContext?.makeCurrentContext()
+
+    // Check if it's time to randomize shaders
+    if randomizeEvery5 && Date().timeIntervalSince(lastRandomizationTime) > 300 {  // 300 seconds = 5 minutes
+      randomizeShaders()
+      lastRandomizationTime = Date()
+    }
+
+    // Determine which shader to use based on the current screen and separateScreens flag
+    let currentShaderIndex: Int
+    if separateScreens {
+      let screenIndex = getCurrentScreenIndex()  // Method to determine the current screen index
+      currentShaderIndex = shaderOrder[screenIndex % shaderPrograms.count]
+    } else {
+      currentShaderIndex = shaderOrder.first ?? 0  // Use the first shader in the list
+    }
+
+    program = shaderPrograms[currentShaderIndex]
 
     let vertices: [GLfloat] = [
       -1.0, 1.0,
@@ -183,7 +246,6 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     self.openGLContext?.update()
   }
 
-
   func setUpOpenGL() {
     self.openGLContext?.makeCurrentContext()
 
@@ -193,26 +255,24 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     glDepthFunc(GLenum(GL_LEQUAL))
   }
 
-
   func loadShaderAbsolutePath(_ path: String) -> String? {
     do {
       let shaderString = try String(contentsOfFile: path, encoding: .utf8)
       let bundle = Bundle(for: type(of: self))
       let resourceFiles = bundle.paths(forResourcesOfType: "glsl", inDirectory: nil)
-      print("Resource files: \(resourceFiles)")
-      print("Path: \(Bundle.main.resourcePath ?? "")")
+      NSLog("###Resource files: \(resourceFiles)")
+      NSLog("###Path: \(Bundle.main.resourcePath ?? "")")
       return shaderString
     } catch {
-      print("Error loading shader: \(error.localizedDescription)")
-      print("Shader path: \(path)")
+      NSLog("###Error loading shader: \(error.localizedDescription)")
+      NSLog("###Shader path: \(path)")
       return nil
     }
   }
 
-
   func loadShader(name: String) -> String? {
     guard let path = Bundle(for: type(of: self)).path(forResource: name, ofType: nil) else {
-      print("Error: shader file \(name) not found.")
+      NSLog("###Error: shader file \(name) not found.")
       return nil
     }
 
@@ -220,13 +280,12 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
       let shaderString = try String(contentsOfFile: path, encoding: .utf8)
       return shaderString
     } catch {
-      print("Error loading shader: \(error.localizedDescription)")
-      print("Shader name: \(name)")
-      print("Shader path: \(path)")
+      NSLog("###Error loading shader: \(error.localizedDescription)")
+      NSLog("###Shader name: \(name)")
+      NSLog("###Shader path: \(path)")
       return nil
     }
   }
-
 
   func compileShader(type: GLenum, source: String) -> GLuint {
     let shader = glCreateShader(type)
@@ -240,13 +299,12 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
       var message = [GLchar](repeating: 0, count: 256)
       glGetShaderInfoLog(shader, GLsizei(message.count), nil, &message)
       let messageString = String(cString: message)
-      print("Failed to compile shader: \(messageString)")
+      NSLog("###Failed to compile shader: \(messageString)")
       return 0
     }
 
     return shader
   }
-
 
   override func animateOneFrame() {
     // Update time-based animations
@@ -256,11 +314,9 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     self.needsDisplay = true
   }
 
-
   override var configureSheet: NSWindow? {
     return configurationWindowController.window
   }
-
 
   static func createShadertoyHeader() -> String {
     return """
@@ -277,7 +333,6 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
       """
   }
 
-
   static func getShaderStringFromJSON(shaderInfo: [String: Any]) -> String {
     guard let shader = shaderInfo["Shader"] as? [String: Any],
       let renderPass = (shader["renderpass"] as? [[String: Any]])?.first,
@@ -288,7 +343,6 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     return code
   }
 
-
   static func JSONFromFile(name: String) -> [String: Any] {
     guard let path = Bundle(for: self).path(forResource: name, ofType: nil),
       let data = try? Data(contentsOf: URL(fileURLWithPath: path))
@@ -298,29 +352,24 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     return (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any] ?? [:]
   }
 
-
-  func JSONFromString(jsonString: String) -> [String: Any] {
+  func JSONFromString(jsonString: String) -> [[String: Any]] {
     guard let data = jsonString.data(using: .utf8) else {
-      return [:]
+      return []
     }
-    return (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any] ?? [:]
+    return (try? JSONSerialization.jsonObject(with: data, options: [])) as? [[String: Any]] ?? []
   }
-
 
   override func startAnimation() {
     super.startAnimation()
   }
 
-
   override func stopAnimation() {
     super.stopAnimation()
   }
 
-
   override var isOpaque: Bool {
     return false
   }
-
 
   override var hasConfigureSheet: Bool {
     return true

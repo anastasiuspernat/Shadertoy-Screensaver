@@ -4,9 +4,8 @@ Based on https://github.com/shaiggon/Shadertoy-Screensaver
 
 ![Screenshot of the screensaver](screenshot/screenshot.png?raw=true)
 
-Load an arbitrary [Shadertoy](https://shadertoy.com) shader by giving a shader ID and
-use it as a macOS screensaver. First goal is to just be able to load a single buffer shader
-but more features will be added in the future.
+Displays arbitrary [Shadertoy](https://shadertoy.com) shaders by giving shader IDs and
+use them as a macOS screensaver. Supports list of shaders and randomizes them across monitors.
 
 ## Installation
 
@@ -14,18 +13,16 @@ Open the project in Xcode and build it. Double click on the created `Shadertoy-S
 
 ## Usage
 
-In the options give the Shadertoy shader ID the ID of the shader you want to show. For example
+In the options give the Shadertoy shader IDs - the list of IDs (separated by comma) of the shaders you want to show. For example
 for the shader in URL [https://www.shadertoy.com/view/dtG3z1](https://www.shadertoy.com/view/dtG3z1)
-the shader ID is `dtG3z1`. You also need to provide the API key that you can request from
-[https://www.shadertoy.com/myapps](https://www.shadertoy.com/myapps). After pressing `Done` the
-shader will be downloaded and used as your screensaver.
+the shader ID is `dtG3z1`. And for two shaders it could be `DtyfRh,mtyGWy` You also need to provide the API key that you can request from
+[https://www.shadertoy.com/myapps](https://www.shadertoy.com/myapps). After pressing `Fetch` the
+shaders will be downloaded. And hitting close will use them as your screensaver.
 
 
 ## TODO
 
-* List of multiple shaders
 * Allow user to load shaders from disk to allow using shaders which are not available via the API
-* Randomize shaders from list on start/over time
 * HDR support
 * Specify FPS limit
 * Random number generator/sahder variable
