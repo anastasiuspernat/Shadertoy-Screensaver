@@ -11,7 +11,7 @@ import ScreenSaver
 
 class Shadertoy_ScreensaverConfigSheet: NSWindowController {
     
-    static let MyModuleName = "com.Shadertoy-Screensaver"
+    static let MyModuleName = "asafari.Shadertoy-Screensaver"
         
     @IBOutlet weak var shadertoyShaderIDTextField: NSTextField!
     @IBOutlet weak var shadertoyAPIKeyTextField: NSTextField!
@@ -69,8 +69,7 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
 
         let requestUrl = createRequestString(shaderID: currentShaderID, apiKey: currentApiKey)
 
-        // Assuming statusTextField is an IBOutlet connected to a label in your UI
-        statusTextField.stringValue = "Fetching shader"
+        statusTextField.stringValue = "Fetching shader..."
         
         fetchData(completion: { data, error, response in
             DispatchQueue.main.async {
@@ -79,7 +78,6 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
                     return
                 }
 
-                NSLog("####### 2");
                 self.statusTextField.stringValue = "Fetching shader was successful"
 
                 if let shaderJson = String(data: data, encoding: .utf8) {
@@ -93,7 +91,26 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
                         } else {
                             if let errorMessageCompile = self.validateFragmentShader(shaderString: Shadertoy_ScreensaverView.getShaderStringFromJSON(shaderInfo: jsonDictionary)) {
                                 self.statusTextField.stringValue = "Couldn't compile shader: \(errorMessageCompile)"
-                                // Handle the error (e.g., show an alert)
+
+                                let alert = NSAlert()
+                                alert.messageText = "Couldn't compile shader"
+
+                                // Create a scrollable NSTextView
+                                let scrollTextView = NSScrollView(frame: NSRect(x: 0, y: 0, width: 300, height: 200))
+                                scrollTextView.hasVerticalScroller = true
+                                scrollTextView.borderType = .bezelBorder
+
+                                let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 290, height: 190))
+                                textView.isEditable = false
+                                textView.string = errorMessageCompile
+                                scrollTextView.documentView = textView
+
+                                // Add the text view to the alert
+                                alert.accessoryView = scrollTextView
+
+                                // Display the alert
+                                alert.runModal()
+
                             } else {
                                 defaults?.set(shaderJson, forKey: "ShaderJSON")
                                 defaults?.synchronize()
