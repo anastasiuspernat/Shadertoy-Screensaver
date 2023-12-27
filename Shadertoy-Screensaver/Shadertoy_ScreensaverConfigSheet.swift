@@ -13,10 +13,15 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
 
   static let MyModuleName = Bundle.main.bundleIdentifier ?? "com.Shadertoy-Screensaver"
 
+  // List of shader IDs
   @IBOutlet weak var shadertoyShaderIDTextField: NSTextField!
+  // Shader API key
   @IBOutlet weak var shadertoyAPIKeyTextField: NSTextField!
+  // Status of loading list of shaders
   @IBOutlet weak var statusTextField: NSTextField!
+  // Checkbox to display a separate shader on separate screen/monitor
   @IBOutlet weak var separateScreensCheckbox: NSButton!
+  // Shuffle shaders across screens
   @IBOutlet weak var randomizeEvery5Checkbox: NSButton!
 
   override func windowDidLoad() {

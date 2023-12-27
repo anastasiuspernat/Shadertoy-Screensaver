@@ -61,8 +61,6 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     self.separateScreens = defaults?.bool(forKey: "separateScreens") ?? false
     self.randomizeEvery5 = defaults?.bool(forKey: "randomizeEvery5") ?? false
 
-    // 111 - Temporary fix for empty json
-    // TODO: Fix this in a better way - or it won't run draw() when shader is empty on start
     let shadertoyJson = defaults?.string(forKey: "ShaderJSONs") ?? "[{\"Error\": \"Default\"}]"
 
     NSLog("###shadertoyJson: \(String(describing: shadertoyJson))")
@@ -84,10 +82,7 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
 
       let header = Shadertoy_ScreensaverView.createShadertoyHeader()
 
-      NSLog("####1")
-
-      if shaderInfo["Error"] == nil || shaderInfo["Default"] == nil {
-        NSLog("####2 YES")
+      if shaderInfo["Error"] == nil || shaderInfo["Error"] as? String == "Default" {
         shadertoyCode = Shadertoy_ScreensaverView.getShaderStringFromJSON(shaderInfo: shaderInfo)
 
         // Temporary fix for empty json
@@ -100,10 +95,8 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
         fragmentShader = compileShader(
           type: GLenum(GL_FRAGMENT_SHADER), source: fragmentShaderString)
       }
-      NSLog("####3")
 
       if fragmentShader == 0 {
-        NSLog("####4")
         NSLog("###Error with fetched shader. Revert to shader loaded from disk")
 
         let defaultShaderInfo = Shadertoy_ScreensaverView.JSONFromFile(name: "shader.json")
@@ -141,14 +134,17 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
       NSLog(
         "###Gl version: \(String(describing: String(cString: glGetString(GLenum(GL_VERSION)))))")
 
-      // Higher framerates can result in GPU overheating
-      // [self setAnimationTimeInterval:1/20.0]; // This should be set in the appropriate place in Swift
+        
       NSLog("###Setup successful")
 
       shaderPrograms.append(program)
     }
 
     shaderOrder = Array(0..<shaderPrograms.count)  // Initialize the order of shaders
+    shaderOrder.shuffle(); // Randomize on each start
+      
+    // Higher framerates can result in GPU overheating
+    self.animationTimeInterval = 1.0 / 20.0
 
   }
 
@@ -167,7 +163,7 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
 
   func getCurrentScreenIndex() -> Int {
     guard let windowScreen = self.window?.screen else {
-      NSLog("### ScreenSaverView is not attached to a window/screen.")
+      NSLog("### Shadertoy-ScreenSaverView is not attached to a window/screen.")
       return 0
     }
 
@@ -189,7 +185,7 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     // Determine which shader to use based on the current screen and separateScreens flag
     let currentShaderIndex: Int
     if separateScreens {
-      let screenIndex = getCurrentScreenIndex()  // Method to determine the current screen index
+      let screenIndex = getCurrentScreenIndex()
       currentShaderIndex = shaderOrder[screenIndex % shaderPrograms.count]
     } else {
       currentShaderIndex = shaderOrder.first ?? 0  // Use the first shader in the list
