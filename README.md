@@ -17,7 +17,7 @@ In the options give the Shadertoy shader IDs - the list of IDs (separated by com
 for the shader in URL [https://www.shadertoy.com/view/dtG3z1](https://www.shadertoy.com/view/dtG3z1)
 the shader ID is `dtG3z1`. And for two shaders it could be `DtyfRh,mtyGWy` You also need to provide the API key that you can request from
 [https://www.shadertoy.com/myapps](https://www.shadertoy.com/myapps). After pressing `Fetch` the
-shaders will be downloaded. And hitting close will use them as your screensaver.
+shaders will be downloaded. And hitting `Close` will use them as your screensaver.
 
 
 ## TODO
@@ -25,7 +25,7 @@ shaders will be downloaded. And hitting close will use them as your screensaver.
 * Allow user to load shaders from disk to allow using shaders which are not available via the API
 * HDR support
 * Specify FPS limit
-* Random number generator/sahder variable
+* Random number generator/shader variable
 * One to one mapping of GL uniforms to the ones used in Shadertoy
 * Multiple buffers (now just supports on image shaders)
 * Clean up code

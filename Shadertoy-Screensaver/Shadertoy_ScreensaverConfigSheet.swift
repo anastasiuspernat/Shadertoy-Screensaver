@@ -2,7 +2,7 @@
 //  Shadertoy_ScreensaverConfigSheet.swift
 //  Shadertoy-Screensaver
 //
-//  Re-created in Swift by Anastasiy Safari on 12/25/23.
+//  Developed by Anastasiy Safari on 12/25/23.
 //  Created by Lauri Saikkonen on 14.7.2023.
 //
 
@@ -47,6 +47,7 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
     // outlineView.delegate = self
   }
 
+  // Validate the shader string by compiling it
   func validateFragmentShader(shaderString: String) -> String? {
     let fullShaderString = Shadertoy_ScreensaverView.createShadertoyHeader() + shaderString
 
@@ -68,6 +69,7 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
     return nil
   }
 
+  // Fetch the shader JSON from the Shadertoy API when clicked "Fetch" in the dialog
   @IBAction func doneButtonClicked(_ sender: Any) {
     let defaults = ScreenSaverDefaults(
       forModuleWithName: Shadertoy_ScreensaverConfigSheet.MyModuleName)
@@ -105,13 +107,13 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
                 let jsonDictionary = shaderJson as? [String: Any]
               {
                 if let errorMessage = jsonDictionary["Error"] as? String {
-                  self.showAlert(with: errorMessage)
+                  self.showAlert(title: "Shader \(shaderID) error", message: errorMessage)
                   hasErrorOccurred = true
                 } else if let errorMessageCompile = self.validateFragmentShader(
                   shaderString: Shadertoy_ScreensaverView.getShaderStringFromJSON(
                     shaderInfo: jsonDictionary))
                 {
-                  self.showAlert(with: errorMessageCompile)
+                  self.showAlert(title: "Shader \(shaderID) error", message: errorMessageCompile)
                   hasErrorOccurred = true
                 } else {
                   shadersArray.append(jsonDictionary)
@@ -144,10 +146,10 @@ class Shadertoy_ScreensaverConfigSheet: NSWindowController {
     }
   }
 
-  func showAlert(with message: String) {
+  func showAlert(title: String, message: String) {
     DispatchQueue.main.async {
       let alert = NSAlert()
-      alert.messageText = "Shader Error"
+      alert.messageText = title
       alert.informativeText = message
       alert.alertStyle = .warning
       alert.addButton(withTitle: "OK")

@@ -1,4 +1,4 @@
-//  Re-created in Swift by Anastasiy Safari on 12/25/23.
+//  Developed by Anastasiy Safari on 12/25/23.
 //  Created by Lauri Saikkonen on 14.7.2023.
 
 import Cocoa
@@ -22,6 +22,8 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
   var shaderPrograms: [GLuint] = []  // Array to store multiple shader programs
   var shaderOrder: [Int] = []  // Order of shaders for each screen
 
+  var enableHDR: Bool = true
+
   static let MyModuleName = Bundle.main.bundleIdentifier ?? "com.Shadertoy-Screensaver"
 
   lazy var configurationWindowController: Shadertoy_ScreensaverConfigSheet =
@@ -36,12 +38,17 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     let attrs: [NSOpenGLPixelFormatAttribute] = [
       UInt32(NSOpenGLPFAAccelerated),
       UInt32(NSOpenGLPFADoubleBuffer),
-      UInt32(NSOpenGLPFAColorSize), 24,
+      UInt32(NSOpenGLPFAColorSize), enableHDR ? 30 : 24,
       UInt32(NSOpenGLPFAAlphaSize), 8,
-      UInt32(NSOpenGLPFADepthSize), 24,
+      UInt32(NSOpenGLPFADepthSize), enableHDR ? 30 : 24,
       UInt32(NSOpenGLPFAOpenGLProfile), UInt32(NSOpenGLProfileVersion4_1Core),
       0,
     ]
+
+    if enableHDR {
+      self.wantsExtendedDynamicRangeOpenGLSurface = true
+      self.wantsLayer = true
+    }
 
     let format = NSOpenGLPixelFormat(attributes: attrs)
     self.openGLContext = NSOpenGLContext(format: format!, share: nil)
@@ -134,15 +141,14 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
       NSLog(
         "###Gl version: \(String(describing: String(cString: glGetString(GLenum(GL_VERSION)))))")
 
-        
       NSLog("###Setup successful")
 
       shaderPrograms.append(program)
     }
 
     shaderOrder = Array(0..<shaderPrograms.count)  // Initialize the order of shaders
-    shaderOrder.shuffle(); // Randomize on each start
-      
+    shaderOrder.shuffle()  // Randomize on each start
+
     // Higher framerates can result in GPU overheating
     self.animationTimeInterval = 1.0 / 20.0
 
@@ -217,6 +223,15 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     glUniform1f(glGetUniformLocation(program, "iFrame"), GLfloat(iFrame))
     glUniform1f(glGetUniformLocation(program, "iFrameRate"), GLfloat(1.0 / animationTimeInterval))
     glUniform1f(glGetUniformLocation(program, "iTimeDelta"), GLfloat(animationTimeInterval))
+
+    //Supply random numbers to shader
+    let seed1: Float = Float.random(in: 0..<1)
+    let seed2: Float = Float.random(in: 0..<1)
+    glUniform1f(glGetUniformLocation(program, "iSeed1"), seed1)
+    glUniform1f(glGetUniformLocation(program, "iSeed2"), seed2)
+
+    let hdrSupported: Bool = enableHDR
+    glUniform1i(glGetUniformLocation(program, "isHDRSupported"), hdrSupported ? 1 : 0)
 
     let iResolutionLocation = glGetUniformLocation(program, "iResolution")
 
@@ -310,6 +325,15 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     self.needsDisplay = true
   }
 
+  /*
+
+     //float iSeed1 = 0.234;  // First seed
+     //float iSeed2 = 0.9123;  // Second seed
+
+     //uniform float iSeed1;
+     //uniform float iSeed2;
+*/
+
   override var configureSheet: NSWindow? {
     return configurationWindowController.window
   }
@@ -319,6 +343,9 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
       #version 410 core
       uniform vec3 iResolution;
       uniform float iTime;
+      uniform float iSeed1;
+      uniform float iSeed2;
+      uniform int isHDRSupported;
       void mainImage(out vec4 c, in vec2 f);
       out vec4 shadertoy_out_color;
       void main(void) {
