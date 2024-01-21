@@ -19,7 +19,6 @@ the shader ID is `dtG3z1`. And for two shaders it could be `DtyfRh,mtyGWy` You a
 [https://www.shadertoy.com/myapps](https://www.shadertoy.com/myapps). After pressing `Fetch` the
 shaders will be downloaded. And hitting `Close` will use them as your screensaver.
 
-
 ## TODO
 
 * Allow user to load shaders from disk to allow using shaders which are not available via the API
@@ -28,7 +27,5 @@ shaders will be downloaded. And hitting `Close` will use them as your screensave
 * Random number generator/shader variable
 * One to one mapping of GL uniforms to the ones used in Shadertoy
 * Multiple buffers (now just supports on image shaders)
-* Clean up code
-* Easier installation
 * Fix this: This might cause some shaders not working exactly as they work in your browser. For example on Shadertoy an uninitialized
 variable may be initialized to zero while the same variable might be garbage in this project.

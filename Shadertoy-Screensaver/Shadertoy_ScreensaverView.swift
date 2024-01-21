@@ -158,6 +158,9 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     fatalError("### required init(coder:) has not been implemented")
   }
 
+  /**
+    * Randomize the order of shaders, also resets the current time & frame, so all shaders start from the beginning
+    */
   func randomizeShaders() {
     if separateScreens {
       shaderOrder.shuffle()
@@ -165,6 +168,10 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
       // Randomize for a single shader on all screens
       shaderOrder = [Int.random(in: 0..<shaderPrograms.count)]
     }
+
+    // Reset current time & frame
+    self.iFrame = 0
+    self.time = 0.0
   }
 
   func getCurrentScreenIndex() -> Int {
@@ -225,10 +232,10 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
     glUniform1f(glGetUniformLocation(program, "iTimeDelta"), GLfloat(animationTimeInterval))
 
     //Supply random numbers to shader
-    let seed1: Float = Float.random(in: 0..<1)
-    let seed2: Float = Float.random(in: 0..<1)
-    glUniform1f(glGetUniformLocation(program, "iSeed1"), seed1)
-    glUniform1f(glGetUniformLocation(program, "iSeed2"), seed2)
+    // let seed1: Float = Float.random(in: 0..<1)
+    // let seed2: Float = Float.random(in: 0..<1)
+    // glUniform1f(glGetUniformLocation(program, "iSeed1"), seed1)
+    // glUniform1f(glGetUniformLocation(program, "iSeed2"), seed2)
 
     let hdrSupported: Bool = enableHDR
     glUniform1i(glGetUniformLocation(program, "isHDRSupported"), hdrSupported ? 1 : 0)
@@ -346,6 +353,7 @@ class Shadertoy_ScreensaverView: ScreenSaverView {
       uniform float iSeed1;
       uniform float iSeed2;
       uniform int isHDRSupported;
+      uniform vec2 iMouse;
       void mainImage(out vec4 c, in vec2 f);
       out vec4 shadertoy_out_color;
       void main(void) {
